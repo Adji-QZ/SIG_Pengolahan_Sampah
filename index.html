@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sistem Informasi Geografis Pengelolaan Sampah - Jawa Tengah 2024</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bs-primary: #6f42c1
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    header.masthead {
+      background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+      color: #fff;
+      padding: 8rem 0;
+    }
+
+    header.masthead .btn-primary {
+      background: #fff;
+      color: var(--bs-primary);
+      border: none
+    }
+
+    #map {
+      height: 480px;
+      border-radius: 8px;
+    }
+
+    .portfolio-item img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 6px
+    }
+
+    .info-stat {
+      border-radius: 8px;
+      padding: 1rem;
+      background: #f8f9fa
+    }
+
+    footer {
+      padding: 2rem 0;
+      background: #222;
+      color: #ddd
+    }
+  </style>
+  <style>
+    .btn-map {
+      margin: 4px;
+    }
+
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  <style>
+    .map-frame {
+      width: 100%;
+      max-width: 100%;
+      height: 600px;
+      /* tinggi peta (bisa diubah 500–700px) */
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Responsif untuk HP */
+    @media (max-width: 768px) {
+      .map-frame {
+        height: 450px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .map-frame {
+        height: 380px;
+      }
+    }
+  </style>
+  <style>
+    /* Navbar styling */
+    .custom-navbar {
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .navbar-brand {
+      font-size: 1.15rem;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-link {
+      font-weight: 500;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #198754 !important;
+      /* Bootstrap success green */
+      transform: translateY(-2px);
+    }
+
+    .nav-link.active {
+      color: #198754 !important;
+      font-weight: 600;
+    }
+
+    /* Toggler icon size */
+    .navbar-toggler-icon {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+
+    /* Make navbar cleaner on mobile */
+    .navbar-toggler {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+
+</head>
+
+<body id="page-top">
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm custom-navbar">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand fw-bold" href="#page-top">
+        <span class="text-success">SIG</span> Pengolahan Sampah
+      </a>
+
+      <!-- Toggler -->
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarResponsive">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu -->
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+
+          <li class="nav-item">
+            <a class="nav-link px-3" href="#about">Tentang</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link px-3" href="#services">Peta</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link px-3" href="#portfolio">Artikel</a>
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+
+
+  <!-- Header -->
+  <header class="masthead text-center text-white">
+    <div class="container d-flex flex-column align-items-center">
+      <h1 class="fw-bold">Sistem Informasi Geografis<br>Analisis Pengelolaan Sampah Menggunakan Sistem Informasi
+        Geografis di Provinsi Jawa Tengah Tahun 2024</h1>
+      <p class="lead mt-3">Peta interaktif, statistik, dan artikel untuk memahami penimbunan, pengurangan, dan
+        penanganan sampah di Jateng.</p>
+      <a class="btn btn-primary btn-lg mt-3" href="#services">Lihat Peta</a>
+    </div>
+  </header>
+
+  <!-- About -->
+  <section id="about" class="py-5">
+    <div class="container">
+      <div class="row align-items-center">
+
+        <!-- Left: Text -->
+        <div class="col-lg-6">
+
+          <h2 class="text-center mb-3">Tentang Data & Istilah</h2>
+
+          <p class="text-justify">
+            Data pengelolaan sampah Provinsi Jawa Tengah tahun 2024 yang digunakan pada sistem informasi ini
+            bersumber dari SIPSN. Informasi difokuskan pada tiga indikator utama untuk melihat kondisi dan kinerja
+            pengelolaan sampah di tingkat provinsi.
+          </p>
+
+          <ul class="text-justify">
+            <li><strong>Timbulan Sampah :</strong> total sampah yang dihasilkan masyarakat (ton/tahun).</li>
+            <li><strong>Pengurangan Sampah :</strong> upaya mengurangi sampah dari sumbernya melalui 3R dan pemilahan.
+            </li>
+            <li><strong>Penanganan Sampah :</strong> proses layanan seperti pengangkutan, pengolahan, dan TPA.</li>
+          </ul>
+
+          <p class="text-center text-muted mb-0">
+            Sumber data: <strong>SIPSN (2024)</strong>
+          </p>
+
+        </div>
+
+        <!-- Right: Data Table -->
+        <div class="col-lg-6">
+          <div class="shadow-sm p-3 rounded">
+
+            <h5 class="text-center mb-3">Ringkasan Data Provinsi Jawa Tengah</h5>
+
+            <table class="table table-bordered text-center mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Indikator</th>
+                  <th>Total (Ton/Tahun)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Timbulan Sampah</strong></td>
+                  <td>5.922.936</td>
+                </tr>
+                <tr>
+                  <td><strong>Pengurangan</strong></td>
+                  <td>310.671</td>
+                </tr>
+                <tr>
+                  <td><strong>Penanganan</strong></td>
+                  <td>1.836.614</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Services (Peta) -->
+  <section id="services" class="page-section bg-light fade-in">
+    <div class="container px-4 px-lg-5 text-center">
+
+      <h2 class="mb-4">Peta Sistem Infografis Pengelolaan Sampah</h2>
+      <p class="mb-4">Pilih jenis data yang ingin ditampilkan pada peta interaktif.</p>
+
+      <div class="mb-4">
+        <button class="btn btn-secondary btn-map" onclick="loadLayer('kabupaten')">Kabupaten</button>
+        <button class="btn btn-primary btn-map" onclick="loadLayer('timbulan')">Timbulan</button>
+        <button class="btn btn-success btn-map" onclick="loadLayer('pengurangan')">Pengurangan</button>
+        <button class="btn btn-warning btn-map" onclick="loadLayer('penanganan')">Penanganan</button>
+        <button class="btn btn-info btn-map" onclick="loadLayer('pengurangan_persen')">Pengurangan (%)</button>
+        <button class="btn btn-danger btn-map" onclick="loadLayer('penanganan_persen')">Penanganan (%)</button>
+      </div>
+
+      <iframe id="mapFrame" class="map-frame" src="kabupaten_kota/index.html"></iframe>
+
+
+
+    </div>
+  </section>
+
+     
+    </div>
+  </section>
+  >
+
+  <footer>
+    <div class="container text-center">
+      <small>© 2024 — SIG Pengelolaan Sampah Jawa Tengah</small>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script> function loadLayer(layer) {
+      function loadLayer(layer) {
+        const frame = document.getElementById("mapFrame");
+
+        const paths = {
+          kabupaten: "kabupaten_kota/index.html",
+          timbulan: "timbulan_sampah/index.html",
+          pengurangan: "pengurangan_sampah/index.html",
+          penanganan: "penanganan_sampah/index.html",
+          pengurangan_persen: "pengurangan_persen/index.html",
+          penanganan_persen: "penanganan_persen/index.html"
+        };
+
+        frame.src = paths[layer];
+      }
+      const frame = document.getElementById("mapFrame");
+
+      const paths = {
+        timbulan: "timbulan_sampah/index.html",
+        pengurangan: "pengurangan_sampah/index.html",
+        penanganan: "penanganan_sampah/index.html",
+        pengurangan_persen: "pengurangan_persen/index.html",
+        penanganan_persen: "penanganan_persen/index.html"
+      };
+
+      // Kalau tombol ditekan → ganti src
+      if (paths[layer]) {
+        frame.src = paths[layer];
+      }
+
+      // Jika tidak cocok → kembali ke default
+      else {
+        frame.src = "kabupaten_kota/index.html";
+      }
+    }
+  </script>
+</body>
+
+</html>
